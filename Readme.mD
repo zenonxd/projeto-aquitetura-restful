@@ -22,6 +22,19 @@
 - [Anotações Spring](#principais-anotações-spring)
 - [API REST e RESTful](#center-api-rest-e-restful)
 - [Projeto Criando API REST com SpringBoot](#center-criando-api-rest-com-spring-boot)
+  - [Model e Mapeamento Entidade Product](#model-e-mapeamento-da-entidade-product)
+  - [Inserção de Atributos](#inserção-de-atributos)
+  - [Criação Repository com JPA](#criação-do-repository-com-jpa-repository)
+  - [Criação Controller](#criação-do-controller)
+  - [Mapeamento DTO entrada com records](#mapeamento-dto-de-entrada-com-records)
+  - [POST](#post)
+  - [MÉTODO POST](#método-post)
+  - [MÉTODO GET](#método-get)
+  - [MÉTODO GET COM ID](#método-get-com-id)
+  - [MÉTODO PUT (UPDATE)](#método-put-update)
+  - [MÉTODO DELETE](#método-del-delete)
+  - [Inserindo HATEOAS e Criação de hipermídias](#inserindo-hateoas-e-criação-de-hipermídias)
+  - [Alterações Finais dos Métodos Acima](#center-exemplos--alterações-dos-métodos-acima)
 <hr>
 
 ### Bom, primeiro vamos lembrar sobre **Inversão de Controle**?
