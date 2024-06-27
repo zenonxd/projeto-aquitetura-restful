@@ -5,7 +5,7 @@
 - @Component - Classe mais genérica;
 - @Service - Classe de serviço, onde envolve regras de negócio;
 - @Repository - Classe onde terá transações com base de dados;
-- @Controller - Terá endpoints (URL).
+- @Controller - Terá endpoints.
 - @RestController - Específico para API Rest;
 <hr>
 
