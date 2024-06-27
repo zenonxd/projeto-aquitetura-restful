@@ -1,43 +1,169 @@
 # <center>SPRING BOOT 3 - MICHELLI BRITO 
 
-## PRINCIPAIS ANOTAÇÕES SPRING
+<div align="center">
 
-### Bom, primeiro valos lembrar sobre **Inversão de Controle**?
+![img_3.png](img_3.png)
+</div>
+<hr>
 
-É um padrão de projeto, algo abstrato onde definimos todas as dependência de um determinado objeto, sem termos a necessidade de criar ou gerenciar. Nós passamos esse papel para o Spring (seu core.)
+## Videos de referência para que essa documentação fosse feita 👇
+- [Spring Boot Annotations | +30 anotações na prática](https://www.youtube.com/watch?v=Pd5tr483No0&ab_channel=MichelliBrito)
+- [Spring Boot 3 | Curso Completo 2023](https://www.youtube.com/watch?v=wlYvA2b1BWI&ab_channel=MichelliBrito)
+- PDF Spring Boot Da API REST aos Microservices – 4ª Edição, Michelli Brito.
+- [Instagram Michelli](https://www.instagram.com/brito_michelli/)
+- [Youtube Michelli](https://www.youtube.com/@MichelliBrito)
+<hr>
 
-O **core** do Sring, portanto, **terá toda a responsabilidade de gerenciar todas as dependências**.
+## Tópicos
+- [Inversão de Controle](#bom-primeiro-vamos-lembrar-sobre-inversão-de-controle)
+- [Injeção de Dependência](#injeção-de-dependência)
+- [Core Container](#core-container)
+- [Beans](#beans)
+- [Anotações Spring](#principais-anotações-spring)
+- [API REST e RESTful](#center-api-rest-e-restful)
+- [Projeto Criando API REST com SpringBoot](#center-criando-api-rest-com-spring-boot)
+<hr>
 
-### Ok, mas como o Spring fará isso?
+### Bom, primeiro vamos lembrar sobre **Inversão de Controle**?
 
-Ele utiliza de uma implementação (a forma concreta), a **Injeção de Dependência**. Portanto, a **Injeção de Dependência, nada mais é, do que a implementação concreta, da Injeção de Controle**. 😊
+É um padrão de projeto, algo abstrato onde definimos todas as dependências de um determinado objeto, sem termos a necessidade de criar ou gerenciar. Nós passamos esse papel para o Spring (seu core.)
+
+O **core** do Sring, portanto, **terá toda a responsabilidade de gerir todas as dependências**.
+
+Exemplo: Imagine que temos duas classes, A e B.
+A classe A, possui uma dependência da classe B, visto que ela utiliza um método da mesma.
+Portanto, a Classe A teria que criar sempre uma instância da classe B para que assim pudesse utilizar o seu método.
+
+<div align="center">
+
+![img_4.png](img_4.png)
+</div>
+
+Mas, quando utilizamos inversão de controle, a Classe A não precisa se preocupar em criar instâncias da B. Podemos passara essa responsabilidade para o Spring, conforme dito acima.
+
+**Ele realizará essa Inversão de Controle, através da Injeção de Dependência**.
+
+### Injeção de Dependência
+
+É a maneira como o Spring aplica a Inversão de Controle (definição de dependência) quando necessário.
+
+A Injeção de Dependência define quais classes serão instanciadas e em quais lugares serão injetadas quando houver necessidade.
+
+Portanto, a **Injeção de Dependência, nada mais é, do que a implementação concreta, da Injeção de Controle**. 😊
+
+#### <center> Ok, mas como o Spring definirá isso?
+
+Basta que a classe A crie um Ponto de Injeção da classe B através do construtor. E assim, quando houver necessidade o Spring usará a instância da classe B,
+possibilitando que a classe A, possa utilizar o seu método b.metodoB(), conforme abaixo:
+
+<div align="center">
+
+![img_5.png](img_5.png)
+</div>
+
 
 Dessa forma, o Spring gerenciará todos esses **Beans**. **Beans**, são os objetos que vamos criando conforme vamos construindo nossas aplicações. E assim, o Spring vai cuidar das instancias de todos esses objetos.
+<hr>
 
+## Core Container
 
+Quando o Spring utiliza Injeção de Dependência para aplicar a Inversão de Controle, toda essa implementação está presente no Core Container (onde fica a base de configuração do Spring Framework).
 
+Ao executarmos a aplicação o Core Container é iniciado, as configurações da aplicação pré-definidas em classes ou arquivos XML são lidas e as dependências necessárias são definidas e criadas
+através da IoC. Elas são destruídas quando não forem mais utilizadas.
 
-O Spring anottations possui diversos tipos de anotações, tais como:
+Essas dependências definidas são denominadas **Beans**. Beans são objetos que possuem seu ciclo de vida gerenciado pelo container da IoC/ID do Spring.
 
+Esses passos definem o ciclo de vida de um Container, como pode ser visto abaixo.
+<div align="center">
 
-### Stereotype
-Precisamos mostrar ao Spring quais Beans (objetos), ele irá gerenciar. Um controller, Service, Repository... tudo isso é um Bean. Um objeto passa a ser Bean quando passamos as anotações.
+![img_6.png](img_6.png)
+</div>
+<hr>
+
+## Beans
+
+Como falamos acima, Beans são objetos instanciados, montados e gerenciados por um container do Spring através da Inversão de Controle e Injeção de Dependências.
+
+Assim como um container, um Bean também tem o seu ciclo de vida. Ele é iniciado e criado pelo container, as dependências desse Bean são injetadas,
+o metodo de inicialização é chamada e então, o bean é enviado para o cliente, **no caso a classe que possui essa dependência**. Ele será utilizado e descartado.
+
+Em suma, usando o exemplo acima, quando o container é instanciado ele cria uma instância da classe B, chama o construtor da classe A para injetar esse bean e em seguida,
+a classe A utiliza esse Bean através de b.metodoB().
+
+Após isso, esse Bean é descartado quando não mais utilizado e tal ciclo pode ser visualizado abaixo.
+<div align="center">
+
+![img_7.png](img_7.png)
+</div>
+
+O ciclo de vida de um bean depende do seu escopo, que pode ser determinado no Spring através da anotação @Scope. Os tipos de escopos
+do Spring utilizados para web são:
+- Singleton - O container irá criar uma única instância desse bean e será utilizada para todas as solicitações da instância;
+- Prototype - O container irá criar várias instâncias, uma para cada solicitação;
+- Request - Terá uma instância criada para cada requisição HTTP;
+- Session - Terá a sua instãncia preservada e utilizada para solicitações enquanto durar a sessão.
+
+<hr>
+
+## Configurando Beans no Spring
+É preciso que o Spring conheça quais as classes da aplicação serão beans gerenciados por ele para que então seja aplicada a IoC/ID.
+Para isso há duas maneiras de configurar e determinar esses beans, utilizando configurações em arquivos XML ou por anotações.
+XML hoje não são muito utilizadas, por isso utilizaremos as anotações.
+
+Nas anotações, utilizaremos esteriótipos do Spring, definindo de forma objetiva (e específica), qual o tipo de Bean de cada classe, a saber:
+
+## Principais Anotações Spring
+
+<details>
+<summary>VER MAIS</summary>
+
+## <center> Stereotype
+Precisamos mostrar ao Spring quais Beans (objetos), ele irá gerenciar. Um controller, Service, Repository... tudo isso é um Bean. Um objeto passa a ser Bean assim que passamos as anotações.
 
 - @Component - Todas as classes são Component. Essa é uma anotação mais genérica;
+```java
+@Component
+public class Product {
+
+ private String name;
+ private BigDecimal value;
+
+ //... getters and setters
+}
+```
 - @Repository - Classe onde terá lógicas de negócio do banco de dados (transações);
+```java
+@Repository
+public class ProductRepository {
+ // database transaction methods
+}
+```
 - @Service - Classe de serviço, onde envolve regras e lógicas de negócio;
+```java
+@Service
+public class ProductService {
+ // business rules
+}
+```
 - @Controller - Utilizada quando utilizamos uma aplicação que envolve camadas MVC (model view controller);
+```java
+@Controller
+public class ProductController {
+ // ... GET, POST, DELETE, UPDATE methods
+}
+```
 - @RestController - Para API Rest. Se teremos somente endpoints, expondo a API na Web, utilizamos este.
 <hr>
 
-### Core (Se divide em dois)
-Tudo que envolve a base do Spring, está contida no Core, que fica dentro do projeto SpringFrameWork. Possui várias configurações prontas e também 
+## <center> Core (Se divide em dois)
+Tudo que envolve a base do Spring, está contida no Core, que fica dentro do projeto SpringFrameWork. Possui várias configurações prontas e também
 a possibilidade de customizar e criar configurações necessárias para nossa aplicação.
 
-#### 1. Beans
+### <center> 1. Beans
 Agora que o Spring sabe quais classes serão Beans em virtude das anotações acima utilizadas (Esteriótipos), ele precisa saber **onde ele irá injetar essas instancias quando necessárias**.
 
-Bom, nós utilizamos o **Bean Service** dentro do nosso **Controller**, por exemplo. Pois assim podemos usar os métodos **findAll**, **findById**, etc.
+Bom, nós utilizamos o **Objeto Service** dentro do nosso **Controller**, por exemplo. Pois assim podemos usar os métodos **findAll**, **findById**, etc.
 Portanto, a classe **Controller** terá uma **dependência da classe Service**.
 
 Precisamos **mostrar essa depência pro Spring**, para que ela saiba onde injetá-las quando necessário. Assim sendo, criaremos os **Pontos de Injeção (Dependência) de uma classe com a outra**.
@@ -56,8 +182,8 @@ private ParkingSpotService parkingSpotService;
 
 
 - @Value - Algumas vezes precisamos definir algumas variáveis nas propriedades que usamos dentro do codigo. Mas ao invés
-de deixar isso fixo em um Controller, por exemplo, é uma boa práticar declarar essas propriedades dentro do arquivo properties.
-Logo, se precisarmos fazer alguma melhoria/alteração (**até mesmo sem parar a aplicação**), fica muito mais fácil. Exemplo:
+  de deixar isso fixo em um Controller, por exemplo, é uma boa práticar declarar essas propriedades dentro do arquivo properties.
+  Logo, se precisarmos fazer alguma melhoria/alteração (**até mesmo sem parar a aplicação**), fica muito mais fácil. Exemplo:
 ```properties
 app.name=Parking Control API
 app.port=80
@@ -78,14 +204,14 @@ private String appHost;
 Para exibir os valores, é só dar um SOUT dentro do método. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L72)
 <hr>
 
-#### 2. Context
+### <center> 2. Context
 
 - @Configuration - Podemos configurar Datas de forma global, declarar Beans...
-**Sempre que o Spring iniciar a aplicação, ele irá olhar para essa classe e levar em consideração as customizações e configurações que definirmos nessa classe de Configuração.**
+  **Sempre que o Spring iniciar a aplicação, ele irá olhar para essa classe e levará em consideração as customizações e configurações que definirmos nessa classe de Configuração.**
 <hr>
 
-- @ComponentScan - Podemos definir/excluir determinados pacotes que serão passados na anotação. Mostraremos para o Spring quais são os pacotes que ele irá fazer uma "varredura", 
-buscando pelos Beans que ele irá gerenciar. **Serve só para algo customizado mesmo, pois o Spring em sí já faz uma varredura automática ao ser iniciado.**
+- @ComponentScan - Podemos definir/excluir determinados pacotes que serão passados na anotação. Mostraremos para o Spring quais são os pacotes que ele irá fazer uma "varredura",
+  buscando pelos Beans que ele irá gerenciar. **Serve só para algo customizado mesmo, pois o Spring em sí já faz uma varredura automática ao ser iniciado.**
 ```java
 @Configuration
 @ComponentScan(basePackages = "com.api.parkingcontrol")
@@ -94,9 +220,10 @@ public class BeanConfig{}
 <hr>
 
 - @Bean - Ao invés de declararmos pro spring usando as anotações esteriótipos, faremos de outra maneira.
-    
-    Criamos uma classe por exemplo, chamada MyBean.
-    Dentro da BeanConfig, criaremos um método que irá retornar exatamente o Objeto que criamos.
+
+  Criamos uma classe, por exemplo, chamada MyBean.
+
+  Dentro da BeanConfig, criaremos um método que irá retornar exatamente o Objeto que criamos.
 ```java
 @Bean
 public myBean myBean() {
@@ -109,11 +236,11 @@ Para podermos visualizar o que está dentro da Classe MyBean, faremos uma injeç
 
 Usa o Autowired para fazer a importação, e pode chamar o metodo com myBean.method(). [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L73C1-L74C1)
 
-**Ok, isso foi um Bean criado por nós. Mas eventualmente usaremos Beans advindos de bibliotecas terceirizadas, como fazer nestes casos?**
+<div style="text-align: center;"> <b>Ok, isso foi um Bean criado por nós. Mas eventualmente usaremos Beans advindos de bibliotecas terceirizadas, como fazer nestes casos?</b> </div>
 
 Dentro do nosso pom, inserimos uma dependência modelmapper, utilizada para conversões. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/pom.xml#L38)
 
-#### Declarando Bean de uma biblioteca externa
+### Declarando Bean de uma biblioteca externa
 
 Declaremos o Bean Modelmapper dentro da classe que iremos utilizar, mostrando que mesmo que esse Bean não tenha sido criado por nós, o Spring irá também gerenciá-lo.
 
@@ -128,21 +255,21 @@ E dentro da controller, que é onde iremos iniciar, faremos a injeção. [Veja a
 <hr>
 
 - @Lazy - Quando a gente não define nada na classe criada (passa somente @Component), o Spring internamente usa a "criação ansiosa". Já criando estes Beans, os deixando disponíveis para uso.
-    
-    Mas podemos fazer um "start preguiçoso". **Ou seja, falar pro Spring criar esse Bean somente quando precisar**.
-    
-    Passamos a anotação @Lazy e será feito dessa maneira.
 
-    E como acionar esse Bean em um momento específico pro Spring criar?
+Mas podemos fazer um "start preguiçoso". **Ou seja, falar pro Spring criar esse Bean somente quando precisar**.
 
-Bom, mesmo de sempre. Faremos a injeção de dependência no controller com @Autowired importanto o Bean e assim o Spring carregará o método com @Lazy.
+Passamos a anotação @Lazy e será feito dessa maneira.
+
+E como acionar esse Bean em um momento específico pro Spring criar?
+
+Bom, mesmo de sempre. Faremos a injeção de dependência no controller com @Autowired importanto o Bean e assim o Spring carregará o método com @Lazy. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L46)
 
 **Caso esse LazyBean não esteja importado dentro de algum método, não será inicializado pois o Spring não encontrará nenhum ponto de injeção de dependência.**
 <hr>
 
-- @Primary - Como é possivel ver no repositório desse projeto nos links acima. Nós temos uma interface chamada ParkingSpotService. Essa interface está sofrendo duas importações (ParkingSpotServiceImpl e ParkingSpotServiceImplV2).
+- @Primary - Como é possivel ver no repositório desse projeto nos links acima. Nós temos uma interface chamada **ParkingSpotService**. Essa interface está sofrendo duas importações (ParkingSpotServiceImpl e ParkingSpotServiceImplV2).
 
-Se você não especificar qual ele irá considerar nos pontos de injeção que vamos criando, ele entrará em conflito. Precisamos declarar qual ele irá utilizar. Tipo quando passamos o arquivo no @Qualifier.
+Se você não especificar qual dessas o Spring irá considerar nos pontos de injeção que vamos criando, ele entrará em conflito. Precisamos declarar qual ele irá utilizar. Tipo quando passamos o arquivo no @Qualifier.
 
 Então esse @Qualifier não irá existir. **Usaremos, portanto, o @Primary**. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/services/impl/ParkingSpotServiceImpl.java#L18)
 
@@ -153,6 +280,7 @@ Então esse @Qualifier não irá existir. **Usaremos, portanto, o @Primary**. [V
 - @PropertySource
 - @PropertySources
 - @Profile
+
 <hr>
 
 ### Web
@@ -174,32 +302,36 @@ Então esse @Qualifier não irá existir. **Usaremos, portanto, o @Primary**. [V
 - @SpringBootApplication
 - @EnableAutoConfiguration
 - @ConfigurationProperties
+
+
+
+
+</details>
+
+
 <hr>
 
+## <center> API REST e RESTful
 
+É uma aplicação cliente/servidor que envia e recebe dados por protocolo HTTP. Utiliza XML e JSON como padrão de comunicação e também pode ser
+implementada na linguagem desejada.
 
+O objetivo de desenvolver uma API é para permitir a interoperabilidade entre aplicações. Ou seja, que os dados fluam entre diversos sistemas com o mínimo de intervenção
+humana possível. A mesma API pode, portanto, ser utilizada em um disposito “desktop” e mobile simultaneamente.
 
+Uma API só é RESTful quando se usa na sua implementação o conceito arquiterual REST. Em suma, **REST é algo abstrato** enquanto **RESTful é algo mais concreto**, como a
+implementação deste modelo em alguma API.
 
-
-## INÍCIO
+### <center> Arquitetura REST
+Uma arquitetura REST é em resumo um conjunto de boas práticas. Existem 6 constraints obrigatórias para uma API ser considerada REST.
+1. Ela deve ser cliente/servidor, separando responsabilidades;
+2. Stateless - Não guardar estado no servidor;
+3. A aplicação deve ter a capacidade de realizar cache para reduzir trafégo de dados entre cliente/servidor;
+4. Deve ter uma interface uniforme, contendo recursos bem definidos, apresentar hipermídias e utilizar corretamente métodos HTTP e códigos de retorno;
+5. O sistema deve ser construído em camadas, tendo a possibilidade de escalar a aplicação em multiplos seridores;
+6. a aplicação deve ter a capacidade de evoluir sem a quebra da mesma, ou seja, código sob demanda.
 <hr>
 
-### Core Container
-
-É dentro dele onde está a implementação de inversão de controle, utilizando a injeção de dependência para gerenciar todos esse Beans. Mas...
-
-### O que é inversão de controle?  
-
-É um padrão de projeto, onde um objeto declara suas dependência mas não as cria. O objeto deixa essa tarefa para o framework (Spring). O Spring fará esse trabalho no Container IoC (Core Container), utilizando a injeção de dependência.
-
-### O que é Injeção de Dependência?
-
-É algo mais concreto. É a implementação da injeção de controle quando necessária, é feita pelo Spring Framework.
-
-### O que são Beans?
-
-Nada mais é do que um objeto que é instanciado/montando/gerenciado por um Core Container do Spring, através da Inversão de Controle e Injeção de Dependência.
-Exemplos.: @Component, @Service, @Repository, @Controller.
 
 ## Spring Boot
 
@@ -208,7 +340,8 @@ Exemplos.: @Component, @Service, @Repository, @Controller.
 Antigamente precisava criar vários arquivos XML pra definir algumas coisas, onde hoje tudo já vem configurado, automatizado e simplificado.
 <hr>
 
-## Overview do projeto
+## <center> Criando API REST com Spring Boot
+### Overview do projeto
 
 **PRODUTS API REStful - Products.**
 
@@ -218,7 +351,7 @@ Antigamente precisava criar vários arquivos XML pra definir algumas coisas, ond
 3. @Table(name = "TB_PRODUCTS");
 4. Implementamos Serializable, passando private static final long serialVersionUID = 1L.
 
-#### Inserção de atributos
+### Inserção de atributos
 Algumas coisas aqui estarão diferentes do curso do Nélio, uma vez que este curso é um pouco mais atualizado.
 Por exemplo:
 1. o passar o GenerationType do Id, usaremos AUTO;
@@ -262,7 +395,7 @@ public interface ProductRepository extends JpaRepository<ProductModel, UUID> {}
 
 <hr>
 
-#### POST
+### POST
 O POST receberá o recurso, irá fazer uma validação inicial e salvar na base de dados.
 Antes disso, para recebermos esses valores via JSON, precisaremos mapear esses campos.
 
@@ -319,7 +452,7 @@ Nessa ultima linha, construimos o retorno. O retorno do tipo ResponseEntity ser�
 3. E pra fazer esse save? Como pode ser observado, estamos importando o productRepository. Usaremos seu método .save dentro do body, passando nosso var productModel.
 <hr>
 
-#### MÉTODO GET
+### MÉTODO GET
 ```java
 @GetMapping("/products")
 public ResponseEntity<List<ProductModel>> getAllProducts() {
@@ -389,8 +522,6 @@ E daí damos o retorno padrão dando o OK e salvando.
 
 ### MÉTODO DEL (DELETE)
 
-
-
 ```java
 @DeleteMapping("/products/{id}")
 public ResponseEntity<Object> deleteProduct(@PathVariable(value = "id") UUID id) {
@@ -430,9 +561,9 @@ public class ProductModel extends RepresentationModel<ProductModel> implements S
 Agora, quando formos utilizar essa clase, internamente ele já vai ter alguns métodos (como add, por exemplo) para construimos alguns links para navegabilidade.
 <hr>
 
-### EXEMPLOS + ALTERAÇÕES DOS MÉTODOS ACIMA.
+### <center> EXEMPLOS + ALTERAÇÕES DOS MÉTODOS ACIMA.
 
-#### NA CLASSE PRODUCTCONTROLLER <<<
+#### <center> NA CLASSE PRODUCTCONTROLLER <<<
 Como é possível ver nos métodos acima, **fazemos no proprio retorno a busca ou save ou qualquer outro método do repository**, iremos mudar isso.
 
 Import dos links e methodOn
@@ -467,16 +598,17 @@ public ResponseEntity<List<ProductModel>> getAllProducts() {
 }
 ```
 
-Em suma:
+#### <center> RESUMO
+
 - Criamos uma Lista do tipo ProductModel e passamos o findAll dentro dela;
 - Fazemos um if para saber se ela está vazia, se não tiver:
   - Faremos um loop, criaremos uma variável ID e usaremos o product.add;
     - **O .add é uma extensão do proprio RepresentationModel!**
   - Dentro do add, usaremos linkTo, methodOn e withSelfRel.
 
-linkTo - Fala pra qual endpoint/método vamos redirecionar o cliente quando ele clicar neste link.
+#### linkTo - Fala pra qual endpoint/método vamos redirecionar o cliente quando ele clicar neste link.
 
-methodOn - Qual controller está esse método? E qual é este método em sí que vai receber esse redirecionamento?
+#### methodOn - Qual controller está esse método? E qual é este método em sí que vai receber esse redirecionamento?
 
 Bom, se o cliente está numa lista de produtos, vamos redirecionar ele para um produto específico, neste caso é o **getOneProduct**.
 
