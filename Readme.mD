@@ -20,8 +20,8 @@
 - [Core Container](#core-container)
 - [Beans](#beans)
 - [Anotações Spring](#principais-anotações-spring)
-- [API REST e RESTful](api-rest-e-restful)
-- [Projeto Criando API REST com SpringBoot](criando-api-rest-com-spring-boot)
+- [API REST e RESTful](#api-rest-e-restful)
+- [Projeto Criando API REST com SpringBoot](#criando-api-rest-com-spring-boot)
   - [Model e Mapeamento Entidade Product](#model-e-mapeamento-da-entidade-product)
   - [Inserção de Atributos](#inserção-de-atributos)
   - [Criação Repository com JPA](#criação-do-repository-com-jpa-repository)
@@ -34,7 +34,7 @@
   - [MÉTODO PUT (UPDATE)](#método-put-update)
   - [MÉTODO DELETE](#método-del-delete)
   - [Inserindo HATEOAS e Criação de hipermídias](#inserindo-hateoas-e-criação-de-hipermídias)
-  - [Alterações Finais dos Métodos Acima](#center-exemplos--alterações-dos-métodos-acima)
+  - [Alterações Finais dos Métodos Acima](#exemplos--alterações-dos-métodos-acima)
 <hr>
 
 ### Bom, primeiro vamos lembrar sobre **Inversão de Controle**?
@@ -324,7 +324,7 @@ Então esse @Qualifier não irá existir. **Usaremos, portanto, o @Primary**. [V
 
 <hr>
 
-## <center> API REST e RESTful
+## API REST e RESTful
 
 É uma aplicação cliente/servidor que envia e recebe dados por protocolo HTTP. Utiliza XML e JSON como padrão de comunicação e também pode ser
 implementada na linguagem desejada.
@@ -353,7 +353,7 @@ Uma arquitetura REST é em resumo um conjunto de boas práticas. Existem 6 const
 Antigamente precisava criar vários arquivos XML pra definir algumas coisas, onde hoje tudo já vem configurado, automatizado e simplificado.
 <hr>
 
-## <center> Criando API REST com Spring Boot
+## Criando API REST com Spring Boot
 ### Overview do projeto
 
 **PRODUTS API REStful - Products.**
@@ -574,7 +574,7 @@ public class ProductModel extends RepresentationModel<ProductModel> implements S
 Agora, quando formos utilizar essa clase, internamente ele já vai ter alguns métodos (como add, por exemplo) para construimos alguns links para navegabilidade.
 <hr>
 
-### <center> EXEMPLOS + ALTERAÇÕES DOS MÉTODOS ACIMA.
+### EXEMPLOS + ALTERAÇÕES DOS MÉTODOS ACIMA.
 
 #### <center> NA CLASSE PRODUCTCONTROLLER <<<
 Como é possível ver nos métodos acima, **fazemos no proprio retorno a busca ou save ou qualquer outro método do repository**, iremos mudar isso.
