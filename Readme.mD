@@ -1,13 +1,185 @@
-# SPRING BOOT 3 - MICHELLI BRITO
+# <center>SPRING BOOT 3 - MICHELLI BRITO 
 
-## ANOTAÇÕES SPRING
+## PRINCIPAIS ANOTAÇÕES SPRING
 
-- @Component - Classe mais genérica;
-- @Service - Classe de serviço, onde envolve regras de negócio;
-- @Repository - Classe onde terá transações com base de dados;
-- @Controller - Terá endpoints.
-- @RestController - Específico para API Rest;
+### Bom, primeiro valos lembrar sobre **Inversão de Controle**?
+
+É um padrão de projeto, algo abstrato onde definimos todas as dependência de um determinado objeto, sem termos a necessidade de criar ou gerenciar. Nós passamos esse papel para o Spring (seu core.)
+
+O **core** do Sring, portanto, **terá toda a responsabilidade de gerenciar todas as dependências**.
+
+### Ok, mas como o Spring fará isso?
+
+Ele utiliza de uma implementação (a forma concreta), a **Injeção de Dependência**. Portanto, a **Injeção de Dependência, nada mais é, do que a implementação concreta, da Injeção de Controle**. 😊
+
+Dessa forma, o Spring gerenciará todos esses **Beans**. **Beans**, são os objetos que vamos criando conforme vamos construindo nossas aplicações. E assim, o Spring vai cuidar das instancias de todos esses objetos.
+
+
+
+
+O Spring anottations possui diversos tipos de anotações, tais como:
+
+
+### Stereotype
+Precisamos mostrar ao Spring quais Beans (objetos), ele irá gerenciar. Um controller, Service, Repository... tudo isso é um Bean. Um objeto passa a ser Bean quando passamos as anotações.
+
+- @Component - Todas as classes são Component. Essa é uma anotação mais genérica;
+- @Repository - Classe onde terá lógicas de negócio do banco de dados (transações);
+- @Service - Classe de serviço, onde envolve regras e lógicas de negócio;
+- @Controller - Utilizada quando utilizamos uma aplicação que envolve camadas MVC (model view controller);
+- @RestController - Para API Rest. Se teremos somente endpoints, expondo a API na Web, utilizamos este.
 <hr>
+
+### Core (Se divide em dois)
+Tudo que envolve a base do Spring, está contida no Core, que fica dentro do projeto SpringFrameWork. Possui várias configurações prontas e também 
+a possibilidade de customizar e criar configurações necessárias para nossa aplicação.
+
+#### 1. Beans
+Agora que o Spring sabe quais classes serão Beans em virtude das anotações acima utilizadas (Esteriótipos), ele precisa saber **onde ele irá injetar essas instancias quando necessárias**.
+
+Bom, nós utilizamos o **Bean Service** dentro do nosso **Controller**, por exemplo. Pois assim podemos usar os métodos **findAll**, **findById**, etc.
+Portanto, a classe **Controller** terá uma **dependência da classe Service**.
+
+Precisamos **mostrar essa depência pro Spring**, para que ela saiba onde injetá-las quando necessário. Assim sendo, criaremos os **Pontos de Injeção (Dependência) de uma classe com a outra**.
+
+```java
+@Autowired
+@Qualifier("parkingSpotServiceImpl")
+private ParkingSpotService parkingSpotService;
+```
+- @AutoWired - Sempre que necessário, o Spring injetará o Bean Service, dentro do Bean Controller.
+
+**Inicialmente, o ParkingSpotService importado acima, é uma interface contendo diversos métodos. Essa interface pode ter outras classes utilizando os seus métodos
+(implementando ela). Ou seja, o Spring não consegue identificar qual Bean será injetado. Qual a solução? Usar a Anotação abaixo: @Qualifier**
+
+- @Qualifier - Dentro dela, passamos qual Classe (que está implementando a interface/service) será utilizada.
+
+
+- @Value - Algumas vezes precisamos definir algumas variáveis nas propriedades que usamos dentro do codigo. Mas ao invés
+de deixar isso fixo em um Controller, por exemplo, é uma boa práticar declarar essas propriedades dentro do arquivo properties.
+Logo, se precisarmos fazer alguma melhoria/alteração (**até mesmo sem parar a aplicação**), fica muito mais fácil. Exemplo:
+```properties
+app.name=Parking Control API
+app.port=80
+app.host=parkingcontrolapp
+```
+
+Para que isso seja exibido ao utilizarmos um método, criamos uma variável dentro da classe passando o @Value.
+```java
+@Value("${app.name}")
+private String name;
+
+@Value("${app.port}")
+private String appPort;
+
+@Value("${app.host}")
+private String appHost;
+```
+Para exibir os valores, é só dar um SOUT dentro do método. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L72)
+<hr>
+
+#### 2. Context
+
+- @Configuration - Podemos configurar Datas de forma global, declarar Beans...
+**Sempre que o Spring iniciar a aplicação, ele irá olhar para essa classe e levar em consideração as customizações e configurações que definirmos nessa classe de Configuração.**
+<hr>
+
+- @ComponentScan - Podemos definir/excluir determinados pacotes que serão passados na anotação. Mostraremos para o Spring quais são os pacotes que ele irá fazer uma "varredura", 
+buscando pelos Beans que ele irá gerenciar. **Serve só para algo customizado mesmo, pois o Spring em sí já faz uma varredura automática ao ser iniciado.**
+```java
+@Configuration
+@ComponentScan(basePackages = "com.api.parkingcontrol")
+public class BeanConfig{}
+```
+<hr>
+
+- @Bean - Ao invés de declararmos pro spring usando as anotações esteriótipos, faremos de outra maneira.
+    
+    Criamos uma classe por exemplo, chamada MyBean.
+    Dentro da BeanConfig, criaremos um método que irá retornar exatamente o Objeto que criamos.
+```java
+@Bean
+public myBean myBean() {
+    return new MyBean();
+}
+```   
+Pro Spring saber detectar que esse MyBean será um Bean gerenciado, precisamos passar @Bean.
+
+Para podermos visualizar o que está dentro da Classe MyBean, faremos uma injeção de dependência dentro da Classe ParkingSpotController, assim como fizemos com o @Value.
+
+Usa o Autowired para fazer a importação, e pode chamar o metodo com myBean.method(). [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L73C1-L74C1)
+
+**Ok, isso foi um Bean criado por nós. Mas eventualmente usaremos Beans advindos de bibliotecas terceirizadas, como fazer nestes casos?**
+
+Dentro do nosso pom, inserimos uma dependência modelmapper, utilizada para conversões. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/pom.xml#L38)
+
+#### Declarando Bean de uma biblioteca externa
+
+Declaremos o Bean Modelmapper dentro da classe que iremos utilizar, mostrando que mesmo que esse Bean não tenha sido criado por nós, o Spring irá também gerenciá-lo.
+
+```java
+(dentro da classe config)
+@Bean
+public ModelMapper modelMapper() {
+    return new ModelPapper();
+}
+```
+E dentro da controller, que é onde iremos iniciar, faremos a injeção. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/services/impl/ParkingSpotServiceImpl.java#L29)
+<hr>
+
+- @Lazy - Quando a gente não define nada na classe criada (passa somente @Component), o Spring internamente usa a "criação ansiosa". Já criando estes Beans, os deixando disponíveis para uso.
+    
+    Mas podemos fazer um "start preguiçoso". **Ou seja, falar pro Spring criar esse Bean somente quando precisar**.
+    
+    Passamos a anotação @Lazy e será feito dessa maneira.
+
+    E como acionar esse Bean em um momento específico pro Spring criar?
+
+Bom, mesmo de sempre. Faremos a injeção de dependência no controller com @Autowired importanto o Bean e assim o Spring carregará o método com @Lazy.
+
+**Caso esse LazyBean não esteja importado dentro de algum método, não será inicializado pois o Spring não encontrará nenhum ponto de injeção de dependência.**
+<hr>
+
+- @Primary - Como é possivel ver no repositório desse projeto nos links acima. Nós temos uma interface chamada ParkingSpotService. Essa interface está sofrendo duas importações (ParkingSpotServiceImpl e ParkingSpotServiceImplV2).
+
+Se você não especificar qual ele irá considerar nos pontos de injeção que vamos criando, ele entrará em conflito. Precisamos declarar qual ele irá utilizar. Tipo quando passamos o arquivo no @Qualifier.
+
+Então esse @Qualifier não irá existir. **Usaremos, portanto, o @Primary**. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/services/impl/ParkingSpotServiceImpl.java#L18)
+
+<hr>
+
+
+- @Scope
+- @PropertySource
+- @PropertySources
+- @Profile
+<hr>
+
+### Web
+
+- @RestController
+- @RequestMapping
+- @PostMapping
+- @GetMapping
+- @PutMapping
+- @DeleteMapping
+- @RequestBody
+- @PathVariable
+- @RequestParam
+- @CrossOrigin
+<hr>
+
+### Boot
+
+- @SpringBootApplication
+- @EnableAutoConfiguration
+- @ConfigurationProperties
+<hr>
+
+
+
+
+
 
 ## INÍCIO
 <hr>
