@@ -288,37 +288,94 @@ Então esse @Qualifier não irá existir. **Usaremos, portanto, o @Primary**. [V
 
 <hr>
 
+- @Scope - Utilizaremos o Controller novamente e, nela, passaremos o @Scope.
+Utilizaremos o parâmetro singleton, conforme vimos na parte de [Beans](#beans).
+Em suma, o @Scope define como o Spring irá lidar com as criações dos Beans (dependendo do parâmetro).
+<hr>
 
-- @Scope
-- @PropertySource
-- @PropertySources
-- @Profile
+- @PropertySource - E se quisermos criar outro arquivo .properties com configurações customizadas?
+Cabe destacar que o Sring lê a application.properties por default.
 
+Podemos criar no package Resources um "custom.properties, por exemplo, contendo o que desejarmos.
+No controller, criaremos uma várivel do tipo de conteúdo que criamos no arquivo "properties". Se for uma String, criaremos uma variável tipo String usando Anottation @Value. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L61)
+
+Mas isso não é o suficiente. O Spring precisa saber o arquivo pro Spring.
+Passamos a anotação @PropertSoruce("classpath:custom.properties") [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L35)
+
+- @PropertySources - Se for multiplos arquivos de .properties, usa ele para declarar todos os caminhos desejados.
+<hr>
+
+- @Profile - Imagine que temos um método que retorne a mesma coisa (objeto, por exemplo), porém com métodos diferentes e os dois estão com anotação @Bean.
+
+Nessa situação, passaremos o @Profile dizendo qual será qual. Porém essa forma não é a ideal, ao inciarmos a aplicação teremos um conflito. O Spring não consegue saber qual perfil está ativo.
+
+#### Jeitos de realizar
+1. Na nossa application.properties, colocaremos logo no começo: ```spring.profiles.active=dev``` ou =prod (o que tiver no @Profile).
+
+
+2. Ao invés de usarmos a anotação dentro no método dentro da BeanConfig, criaremos uma classe para cada Profile.
+E assim sendo, declararemos o @Profile na classe em sí. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/configs/DevBeanConfig.java#L9)
+Na .properties mantém o que a gente quer passar no profile.active. O que muda mesmo é onde declaramos o @Profile.
 <hr>
 
 ### Web
+**Todas as Anottations web ficam no Controller** (EndPoints).
 
-- @RestController
-- @RequestMapping
-- @PostMapping
-- @GetMapping
-- @PutMapping
-- @DeleteMapping
-- @RequestBody
-- @PathVariable
-- @RequestParam
-- @CrossOrigin
+- @RestController - Usado para serviço RESTful = @Controller + @ResponseBody.
+
+
+- @RequestMapping - Definimos qual a URI que o cliente irá enviar para acessar todos os métodos desse EndPoint.
+Primeiro passamos só inicio dela, depois nos outros metodos abaixo passaremos o resto. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L33)
+```
+Derivam do RequestMapping. Receberam uma função POST, GET, PUT ou DEL do tipo HTTP.
+
+@PostMapping
+@GetMapping - 
+@PutMapping
+@DeleteMapping
+```
+
+- @RequestBody - Ele vai desserializar de JSON para Objeto Java. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L92)
+
+
+- @PathVariable - No @GetMapping, por exemplo, nós passamos um caminho ```"/{id}"```. O PathVariable consegue recuperar essa parte da URI.
+Basta passarmos nele ```(value = "id")```. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L83)
+
+
+- @RequestParam - Parecido com o PathVariable, dependendo do parâmetro, podemos colocar depois do primeiro parâmetro, um required = true/false. Para ser obrigatório ou não. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L133)
+
+
+- @CrossOrigin - É onde habilitamos o cors. É onde determinamos as origens/domínios que irão acessar a nossa API. Se colocar "*" será all.
+maxAge = tempo máximo de resposta. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L32)
+Pode ser feito a nível de: classe, método e também configurações globais da aplicação.
 <hr>
 
 ### Boot
 
-- @SpringBootApplication
-- @EnableAutoConfiguration
-- @ConfigurationProperties
+- @SpringBootApplication - A classe void main irá conter essa anotação inicial. Serve para darmos o "start".
+Além disso essa anotação é uma combinação de 03 outras anotações:
+  1. ComponentScan - Falamos pro Spring onde será os pacotes que ele irá fazer a varredura e os Beans que ele irá gerenciar;
+  2. @Configuration - Mostra que é um Bean de configuração do Spring;
+  3. @EnableAutoConfiguration - Veja abaixo 👇
 
 
+- @EnableAutoConfiguration - Utilizada para dizer ao Spring para ele utilizar de forma automática as suas configurações. (Tomcat, MVC, Config de registro de beans, etc...).
 
 
+- @ConfigurationProperties - Lembra do @Value que passamos no Controller? Tivemos que criar variavéis para acessar esses valores que foram passados na .properties.
+
+Nós podemos, portanto, passar esses dados do .properties para um DTO. **Ou seja, converteremos de propriedade para objeto java.**
+1. Criamos uma classe para isso, chamada AppProperties [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/AppProperties.java#L8);
+2. A anotação já vem com um parâmetro chamado "prefix = app". Isso seria um prefixo comum entre as propriedades do arquivo .properties;
+   3. Criamos os métodos que iremos utilizar. Se dentro da .properties temos app.name, app.port, app.host, criaremos as variáveis;
+      ```java
+         private String name;
+         private String port;
+         private String host;
+      
+        //criar também os getters e setters.
+      ```
+   E então, dentro da classe Controller, podemos fazer o SOUT usando essa ponto de injeção. [Veja aqui](https://github.com/MichelliBrito/parking-control-api/blob/8df47619b3016659e88dedb591c2f90ba25b5f4e/src/main/java/com/api/parkingcontrol/controllers/ParkingSpotController.java#L74)
 </details>
 
 
