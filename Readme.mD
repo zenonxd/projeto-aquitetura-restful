@@ -756,6 +756,7 @@ Se quisermos que um campo específico (como CPF ou Email seja unico), passaremos
 <hr>
 
 ### controller
+Interação do client com o nosso backend.
 **Para chamarmos os métodos criados.**
 
 Aqui receberemos as requisições do cliente e passaremos adiante ao Service somente as informações
@@ -786,7 +787,11 @@ Se atentar ainda, as anotações dentro do parâmtro, @NotBlank/@NotNull, etc.
 <hr>
 
 ### repositories
+Para persistirmos (salvarmos/encontrarmos) usuário ou algo específico.
+
 O repository conta com diversos métodos prontos para manipulação de tabelas, para não precisarmos ficar implementando.
+
+Ele terá contato direto com o banco de dados.
 
 Criaremos uma interface com o nome do item + repository: ProductRepository e extenderemos
 com JpaRepository<Entidade, Identificador>.
@@ -798,7 +803,8 @@ Da para passar até query SQL e procurar algo por titulo da entidade.
 <hr>
 
 ### services
-**Aqui faremos validação e verificação de métodos.**
+Regras de negócio!
+**Aqui faremos validação e verificação de métodos que iniciamos no repository.**
 
 **Terá acesso ao repository ou a outras classes do tipo Service** com autowired.
 
